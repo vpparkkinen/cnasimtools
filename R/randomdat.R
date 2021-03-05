@@ -36,3 +36,10 @@ solgen <- function(x = 5, range = c(0.9, 0.6) ,gran = 0.1, ...){
 
 
 }
+
+#' @export
+is_correct <- function(a,b){
+  if (is.na(x) | is.null(a)){TRUE} else {
+    is.submodel(a,b)
+  }
+}
