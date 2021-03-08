@@ -32,7 +32,7 @@ randomDat <- function(x = 5, condtype = c("csf", "asf"), ...){
 }
 
 #' @export
-solgen <- function(x = 5, range = c(0.9, 0.7) ,gran = 0.1, ...){
+solgen <- function(x = 5, range = c(0.8, 0.6) , gran = 0.1, forceoutcome = TRUE, ...){
   r <- seq(min(range), max(range), by = gran)
   cc <- expand.grid(r, r)
   margs <- list(...)
@@ -40,21 +40,22 @@ solgen <- function(x = 5, range = c(0.9, 0.7) ,gran = 0.1, ...){
   rdargs <- margs[which(names(margs) %in% rdatargs_canuse)]
   rms <- list(x, rm.const.factors = TRUE, rm.dup.factors = TRUE)
   rdargs <- c(rms, rdargs)
-  cnaargs_canuse <- c("type", "ordering", "strict",
-    "notcols", "rm.const.factors", "rm.dup.factors",
-    "maxstep", "inus.only",
-    "only.minimal.msc",  "only.minimal.asf",
-    "maxSol", "suff.only",
-    "what", "cutoff",
-    "border",
-    "acyclic.only", "cycle.type")
+  cnaargs_canuse <- names(formals(cna))[!names(formals(cna)) %in% c("x", "con.msc", "con", "cov")]
   cnaargs <- margs[which(names(margs) %in% cnaargs_canuse)]
   not_used <- margs[which(!names(margs) %in% c(rdatargs_canuse, cnaargs_canuse))]
   if(length(not_used) >= 1){warning("following arguments are ignored as not applicable: ", names(not_used))}
   dat <- do.call(randomDat, rdargs)
   if(length(dat) < x){while(length(dat) < x){dat <- do.call(randomDat, rdargs)}}
-  target <- attributes(dat)$target
-  re <- suppressWarnings(mapply(function(a, b, ...) cna::csf(cna::cna(dat, con = a, cov = b, ...), n.init = 10),
+  if (forceoutcome){
+    if (!"ordering" %in% names(cnaargs)){
+      target <- attributes(dat)$target
+      tasfs <- unlist(cna:::extract_asf(target))
+      os <- list(ordering = list(sample(cna:::rhs(tasfs), 1)))
+      cnaargs <- if(length(cnaargs) < 1) {os} else {c(cnaargs, os)}
+    }
+  }
+
+  re <- suppressWarnings(mapply(function(a, b, ...) cna::csf(cna::cna(dat, con = a, cov = b, ...), n.init = 20),
                cc[,1], cc[,2], SIMPLIFY = FALSE, MoreArgs = if(length(cnaargs) < 1){NULL} else {cnaargs}))
   re <- do.call(rbind, re)
   return(re[,2])
