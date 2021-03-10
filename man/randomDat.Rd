@@ -7,8 +7,9 @@
 randomDat(x = 5, condtype = c("csf", "asf"), fuzzy = FALSE, ...)
 }
 \arguments{
-\item{x}{Positive scalar integer determining the number of factors in the
-created data}
+\item{x}{Positive scalar integer, data.frame of binary crisp set data, or a
+configTable object, determining the number of factors in the created data
+as well as their type}
 
 \item{condtype}{Character vector determining if the data-generating structure
 (DGS) can be a csf or not, defaults to csf. If "csf", \code{randomCsf} is
@@ -29,7 +30,7 @@ Primarily a replacement for a snippet
 over five crisp-set factors from a randomly generated csf. Abuses
 \code{...} to pass additional arguments to randomConds, selectCases, and
 makeFuzzy (if \code{fuzzy = TRUE}). Only valid arguments are passed, will
-not brake if given unused arguments. The user may control the creation of fuzzy
-set data by passing an explicit \code{fuzzvalues} argument in \code{...}, otherwise
-makeFuzzy default values are used.
+not brake if given unused arguments. The user may control the creation of
+fuzzy set data by passing an explicit \code{fuzzvalues} argument in
+\code{...}, otherwise makeFuzzy default values are used.
 }
