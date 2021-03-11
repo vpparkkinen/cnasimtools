@@ -50,11 +50,11 @@ solgen <- function(x = 5,
                    gran = 0.1,
                    forceoutcome = TRUE,
                    verbose = FALSE, ...){
-  x <- if(any(class(x) %in% c("data.frame", "configTable"))){x} else {full.ct(x)}
+  #x <- if(any(class(x) %in% c("data.frame", "configTable"))){x} else {full.ct(x)}
   r <- seq(min(range), max(range), by = gran)
   cc <- expand.grid(r, r)
   margs <- list(...)
-  rdatargs_canuse <- c("condtype", "outcome", "compl", "how", "n.asf", "type", "cutoff")
+  rdatargs_canuse <- c("condtype", "outcome", "compl", "how", "n.asf", "type", "cutoff", "mvlevels")
   rdargs <- margs[which(names(margs) %in% rdatargs_canuse)]
   rms <- list(x, rm.const.factors = TRUE, rm.dup.factors = TRUE)
   rdargs <- c(rms, rdargs)
@@ -63,7 +63,7 @@ solgen <- function(x = 5,
   not_used <- margs[which(!names(margs) %in% c(rdatargs_canuse, cnaargs_canuse))]
   if(length(not_used) >= 1){warning("following arguments are ignored as not applicable: ", names(not_used))}
   dat <- do.call(randomDat, rdargs)
-  if(ncol(dat) < ncol(x)){while(ncol(dat) < ncol(x)){dat <- do.call(randomDat, rdargs)}}
+  if(ncol(dat) < x){while(ncol(dat) < ncol(x)){dat <- do.call(randomDat, rdargs)}}
   if (forceoutcome){
     if (!"ordering" %in% names(cnaargs)){
       target <- attributes(dat)$target
