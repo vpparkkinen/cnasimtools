@@ -1,3 +1,4 @@
+#' @export
 noisyDat <- function(x = randomDat(type = type),
                      noiselevel = 0.2,
                      add = TRUE,
@@ -8,6 +9,8 @@ noisyDat <- function(x = randomDat(type = type),
                      type = c("cs", "mv", "fs")){
 
   type <- match.arg(type)
+  xarg <- substitute(x)
+  if ("type" %in% names(xarg) & class(xarg$type) == "character"){type <- xarg$type}
   if(any(class(x) %in% c("numeric", "integer"))) x <- randomDat(x, type = type)
   allconfs <- ct2df(full.ct(x, type = type))
   pnoise <- dplyr::setdiff(allconfs, x)
