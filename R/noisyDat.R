@@ -1,3 +1,36 @@
+#' noisyDat
+#'
+#' Create a noisy data set
+#'
+#' @param x A data frame, configTable, or an integer. If data frame or
+#'   configTable, this will be used as the data to which noise id added. If an
+#'   integer, a data set is created by \code{randomDat}.
+#' @param noiselevel A numeric less than one, determines the proportion of noise
+#'   in the generated data
+#' @param add Logical; if \code{TRUE}, noise is added to \code{x}, otherwise
+#'   rows in \code{x} are replaced by noise
+#' @param cleanbias Either NULL, or a vector of probability weights to use in
+#'   sampling rows from \code{x}. Only used if \code{add = FALSE}
+#' @param noisebias Either NULL, or a vector of probability weights to use in
+#'   sampling noise rows to add to or replace clean rows with
+#' @param rep.noise An integer; determines the minimum number of identical noise
+#'   rows
+#' @param rep.clean An integer; determines a minimum number of identical clean
+#'   rows used if \code{add = FALSE}
+#' @param type Character string; determines the type of data used
+#' @param ... Other arguments passed to randomDat, if \code{x} is given an
+#'   integer value
+#'
+#' @details Takes as input a data frame or a configTable, or creates one with
+#'   \code{randomDat}, and adds or imputes a desired amount of noise rows, where
+#'   noise row is defined as a row featuring a configuration not found in the
+#'   input data. If \code{x} is created by \code{randomDat}, the target used to
+#'   create the data is stored as attribute \code{target} in the returned data frame.
+#'
+#' @returns A data frame
+
+
+
 #' @export
 noisyDat <- function(x = randomDat(type = type),
                      noiselevel = 0.2,
