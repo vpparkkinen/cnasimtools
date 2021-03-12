@@ -9,25 +9,30 @@
 #' @param condtype Character vector determining if the data-generating structure
 #'   (DGS) can be a csf or not, defaults to csf.
 #' @param type Character vector; determines the type of data generated
-#' @param mvlevels Integer vector of lenght two. Determines the range of
+#' @param mvlevels Integer vector of length two. Determines the range of
 #'   permissible factor values when creating multi-value data. Only used if
-#'   \code{type = "mv"} and admissible values are not determined by \code{x}
+#'   \code{type = "mv"} and admissible values are not implicitly determined by
+#'   \code{x}
 #' @param ... Additional arguments passed to \code{randomConds},
 #'   \code{selectCases}, and \code{makefuzzy}
 #'
 #' @details Primarily a more flexible replacement for a snippet
 #'   \code{ct2df(selectCases(randomConds(x)))}. By default produces a data set
 #'   over five crisp-set factors from a randomly generated csf. Other types of
-#'   data can be produced by changing the value of \code{type} to "mv" or "fs"
+#'   data can be produced by changing the value of \code{type} to "mv" or "fs".
 #'   Abuses \code{...} to pass additional arguments to randomConds, selectCases,
 #'   and makeFuzzy (if \code{type = "fs"}). Only valid arguments are passed,
-#'   will not break if given unused arguments. The user may control the creation
-#'   of fuzzy set data by passing an explicit \code{fuzzvalues} argument in
-#'   \code{...}, otherwise makeFuzzy default values are used. Note that argument
-#'   \code{x} accepts any type of value that can be passed to \code{full.ct},
-#'   but the only purpose of assigning other than integer value is to control
-#'   the column names in the created data and admissible factor values in mv
-#'   data (otherwise controlled by the argument \code{mvlevels}).
+#'   will not break if given unused arguments in \code{...}. The user may
+#'   control the creation of fuzzy set data by passing an explicit
+#'   \code{fuzzvalues} argument in \code{...}, otherwise makeFuzzy default
+#'   values are used. Note that argument \code{x} accepts any type of value that
+#'   can be passed to \code{full.ct}, but the underlying procedure is the same
+#'   regardless. The only purpose of assigning other than integer value to
+#'   \code{x} is to control the column names in the created data and admissible
+#'   factor values in mv data (otherwise controlled by the argument
+#'   \code{mvlevels}), if \code{x} is given a multi-value data set.
+#'
+#'
 #'
 #' @returns A data frame
 #'

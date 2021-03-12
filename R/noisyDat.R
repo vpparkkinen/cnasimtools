@@ -6,16 +6,26 @@ noisyDat <- function(x = randomDat(type = type),
                      noisebias = NULL,
                      rep.noise = 0L,
                      rep.clean = 0L,
-                     type = c("cs", "mv", "fs")){
+                     type = c("cs", "mv", "fs"),
+                     ...){
 
   type <- match.arg(type)
   xarg <- substitute(x)
-  if ("type" %in% names(xarg) & class(xarg$type) == "character"){type <- xarg$type}
-  if(any(class(x) %in% c("numeric", "integer"))) x <- randomDat(x, type = type)
+  dots <- list(...)
+  if ("type" %in% names(xarg) && class(xarg$type) == "character"){type <- xarg$type}
+  if(any(class(x) %in% c("numeric", "integer"))) x <- randomDat(x, type = type, ...)
+  if(!any(class(x) %in% c("data.frame", "configTable"))){
+    stop("Invalid argument x = ", deparse(xarg))
+  }
   allconfs <- ct2df(full.ct(x, type = type))
   pnoise <- dplyr::setdiff(allconfs, x)
   #dots <- substitute(list(...))
-  no.replace <- if(add) (noiselevel * nrow(x)) / (1 - noiselevel) else nrow(x) * noiselevel
+  no.replace <- if(add) {
+    (noiselevel * nrow(x)) / (1 - noiselevel)
+    } else {
+      nrow(x) * noiselevel
+      }
+
 
   # if (add){
   #   b <- makedat(pnoise, bias = bias, rep.rows = rep.noise)
@@ -31,8 +41,11 @@ noisyDat <- function(x = randomDat(type = type),
   }
   b <- makedat(some(pnoise, no.replace, replace = FALSE), bias = noisebias, rep.rows = rep.noise)
 
-
-  return(rbind(x, b))
+  out <- rbind(x, b)
+  if("target" %in% attributes(x)) {
+    attr(out, "target") <- attr(x, "target")
+  }
+  return(out)
 }
 
 makedat <- function(x, bias = NULL, rep.rows = 0L){
