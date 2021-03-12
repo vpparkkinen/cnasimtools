@@ -35,7 +35,8 @@
 #'
 #'
 #' @returns A data frame
-#'
+#' @examples
+#' randomDat(5, type = "mv")
 
 #' @import cna
 #' @export
@@ -72,7 +73,7 @@ randomDat <- function(x = 5,
   #     x <- full.ct(names(x))
   #   } else
   if (any(class(x) %in% c("integer", "numeric")) & dtype == "mv"){
-      x <- replicate(5, c(list(mvlevels)))
+      x <- replicate(x, c(list(mvlevels)))
       names(x) <- LETTERS[1:length(x)]
     }
   x <- full.ct(x, type = dtype)

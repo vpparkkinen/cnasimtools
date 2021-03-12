@@ -1,18 +1,19 @@
 Package: cnasimtools
-Title: What the Package Does (One Line, Title Case)
+Title: Miscallaneous tools for writing and testing simulations with CNA
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Veli-Pekka",
+           family = "Parkkinen",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to
-    pick a license
+           email = "parkkinenv@gmail.com")
+Description: Provides wrappers for CNA functions commonly used in writing simulations, like selectCases and randomConds,
+             that automate common tasks like the generation of random ideal data sets 
+             or data sets with a desired amount of noise.
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
-    cna
+    cna,
+    dplyr
