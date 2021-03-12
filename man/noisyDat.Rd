@@ -33,16 +33,18 @@ sampling rows from \code{x}. Only used if \code{add = FALSE}}
 \item{noisebias}{Either NULL, or a vector of probability weights to use in
 sampling noise rows to add to or replace clean rows with}
 
-\item{rep.noise}{An integer; determines the minimum number of identical noise
-rows}
+\item{rep.noise}{A numeric less than one; proportion of noise
+rows that are forced to be identical, provided that the number of noise rows
+(which depends on \code{x} and \code{noiselevel}) is large enough}
 
-\item{rep.clean}{An integer; determines a minimum number of identical clean
-rows used if \code{add = FALSE}}
+\item{rep.clean}{A numeric less than one; proportion of rows in clean data
+that are forced to be identical, given \code{add = FALSE} and the clean data set
+is large enough}
 
 \item{type}{Character string; determines the type of data used}
 
-\item{...}{Other arguments passed to randomDat, if \code{x} is given an
-integer value}
+\item{...}{Other arguments; passed to randomDat in case \code{x} is given an
+integer value, ignored otherwise}
 }
 \value{
 A data frame
@@ -55,5 +57,6 @@ Takes as input a data frame or a configTable, or creates one with
 \code{randomDat}, and adds or imputes a desired amount of noise rows, where
 noise row is defined as a row featuring a configuration not found in the
 input data. If \code{x} is created by \code{randomDat}, the target used to
-create the data is stored as attribute \code{target} in the returned data frame.
+create the data is stored as attribute \code{target} in the returned data
+frame.
 }

@@ -47,14 +47,17 @@
 #'   desired maximum number of factors in the solutions.
 
 
-
 #' @export
+
 solgen <- function(x = 5,
                    range = c(0.8, 0.6),
                    gran = 0.1,
                    forceoutcome = TRUE,
                    verbose = FALSE, ...){
   #x <- if(any(class(x) %in% c("data.frame", "configTable"))){x} else {full.ct(x)}
+  extract_asf <- utils::getFromNamespace("extract_asf","cna")
+  noblanks <- utils::getFromNamespace("noblanks", "cna")
+  rhs <- utils::getFromNamespace("rhs", "cna")
   r <- seq(min(range), max(range), by = gran)
   cc <- expand.grid(r, r)
   margs <- list(...)
@@ -71,10 +74,10 @@ solgen <- function(x = 5,
   if (forceoutcome){
     if (!"ordering" %in% names(cnaargs)){
       target <- attributes(dat)$target
-      target <- cna:::noblanks(target)
-      tasfs <- unlist(cna:::extract_asf(target))
+      target <- noblanks(target)
+      tasfs <- unlist(extract_asf(target))
       #os <- list(ordering = list(sample(cna:::rhs(tasfs), 1)))
-      os <- sample(cna:::rhs(tasfs), 1)
+      os <- sample(rhs(tasfs), 1)
       os <- gsub("=.*", "", os)
       os <- list(ordering = list(os))
       #os[[1]][[1]] <- unlist(strsplit(os[[1]][[1]], ""))[[1]]
