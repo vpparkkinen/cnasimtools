@@ -109,7 +109,7 @@ randomDat <- function(x = 5,
     gap <- samplesize - nrow(df)
     if (gap == 0){df <- df} else if(gap < 0){
       fragmented <- gap
-      df <- df[sample(1:nrow(df), nrow(df) - gap),]
+      df <- df[sample(1:nrow(df), nrow(df) + gap),]
     } else {
       n <- samplesize %/% nrow(df)
       nmod <- samplesize - (n*nrow(df))

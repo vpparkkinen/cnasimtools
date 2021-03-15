@@ -35,8 +35,9 @@
 
 
 #' @export
-noisyDat <- function(x = randomDat(type = type),
-                     noiselevel = 0.2,
+noisyDat <- function(x = 5,
+                     set_N = 20,
+                     noisefraction = 0.2,
                      add = TRUE,
                      cleanbias = NULL,
                      noisebias = NULL,
@@ -48,21 +49,39 @@ noisyDat <- function(x = randomDat(type = type),
   type <- match.arg(type)
   xarg <- substitute(x)
   dots <- list(...)
-  if ("type" %in% names(xarg) && class(xarg$type) == "character"){type <- xarg$type}
-  if(any(class(x) %in% c("numeric", "integer"))) x <- randomDat(x, type = type, ...)
+
+  ssize <- if(add) {
+    (1 - noisefraction) * set_N } else
+      {
+        set_N
+      }
+
+
+  if(!is.null(set_N) && set_N %% (set_N * noisefraction) != 0){
+    stop("noisefraction must represent a fraction of set_N")
+  }
+  # if ("type" %in% names(xarg) && class(xarg$type) == "character"){
+  #   type <- xarg$type
+  #   }
+  if(any(class(x) %in% c("numeric", "integer"))) {
+    x <- randomDat(x,
+                   type = type,
+                   samplesize = ssize,
+                   ...)
+    }
   if(!any(class(x) %in% c("data.frame", "configTable"))){
     stop("Invalid argument x = ", deparse(xarg))
   }
   allconfs <- ct2df(full.ct(x, type = type))
   pnoise <- dplyr::setdiff(allconfs, x)
   #dots <- substitute(list(...))
-  no.replace <- if(add) {
-    (noiselevel * nrow(x)) / (1 - noiselevel)
-    } else {
-      nrow(x) * noiselevel
-      }
+  # no.replace <- if(add) {
+  #   (noiselevel * nrow(x)) / (1 - noiselevel)
+  #   } else {
+  #     nrow(x) * noiselevel
+  #     }
 
-
+  no.replace <- set_N * noisefraction
   # if (add){
   #   b <- makedat(pnoise, bias = bias, rep.rows = rep.noise)
   # } else {
@@ -71,6 +90,7 @@ noisyDat <- function(x = randomDat(type = type),
                  bias = cleanbias, rep.rows = rep.clean)
   }
 
+  #nmod <-
   # }
   if (nrow(pnoise) < no.replace) {
     pnoise <- rbind(pnoise, some(pnoise, no.replace - nrow(pnoise)))
