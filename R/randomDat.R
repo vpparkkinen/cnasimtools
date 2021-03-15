@@ -111,10 +111,10 @@ randomDat <- function(x = 5,
       fragmented <- gap
       df <- df[sample(1:nrow(df), nrow(df) - gap),]
     } else {
-      n <- gap %/% nrow(df)
-      nmod <- gap %% nrow(df)
+      n <- samplesize %/% nrow(df)
+      nmod <- samplesize - (n*nrow(df))
       duplicaterows <- nmod
-      if (n == 0 | n == 1) {predf <- df} else {
+      if (n == 1) {predf <- df} else {
         predf <- do.call(rbind, rep(list(df), n))
       }
      df <- rbind(predf, df[sample(1:nrow(df), nmod),])
