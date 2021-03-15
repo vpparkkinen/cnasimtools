@@ -44,6 +44,7 @@ randomDat <- function(x = 5,
                       condtype = c("csf", "asf"),
                       type = c("cs", "mv", "fs"),
                       mvlevels = if(type == "mv") c(0L:3L) else NULL,
+                      samplesize = NULL,
                       ...){
   call <- match.call()
   ctype <- match.arg(condtype)
@@ -98,8 +99,28 @@ randomDat <- function(x = 5,
   }
 
 
-
   if (ncol(df) < ncol(x[[1]])){df <- eval.parent(call)}
+
+  fragmented <- 0L
+  duplicaterows <- 0L
   attributes(df)$target <- mod
+
+  if(!is.null(samplesize)){
+    gap <- samplesize - nrow(df)
+    if (gap == 0){df <- df} else if(gap < 0){
+      fragmented <- gap
+      df <- df[sample(1:nrow(df), nrow(df) - gap),]
+    } else {
+      n <- gap %/% nrow(df)
+      nmod <- gap %% nrow(df)
+      duplicaterows <- nmod
+      if (n == 0 | n == 1) {predf <- df} else {
+        predf <- do.call(rbind, rep(list(df), n))
+      }
+     df <- rbind(predf, df[sample(1:nrow(df), nmod),])
+    }
+  }
+  attr(df, "fragmented") <- fragmented
+  attr(df, "duplicaterows") <- duplicaterows
   return(df)
 }
