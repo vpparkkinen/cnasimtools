@@ -50,25 +50,40 @@ noisyDat <- function(x = 5,
   xarg <- substitute(x)
   dots <- list(...)
 
-  ssize <- if(add) {
-    (1 - noisefraction) * set_N } else
-      {
-        set_N
+  if(any(class(x) %in% c("configTable", "data.frame"))){
+    x <- if(any(class(x) == "configTable")) ct2df(x) else x
+
+    no.replace <- if(add) {
+      (noisefraction * nrow(x)) / (1 - noisefraction)
+      } else {
+        nrow(x) * noisefraction
       }
 
-
-  if(!is.null(set_N) && set_N %% (set_N * noisefraction) != 0){
-    stop("noisefraction must represent a fraction of set_N")
   }
+
+
+
+
   # if ("type" %in% names(xarg) && class(xarg$type) == "character"){
   #   type <- xarg$type
   #   }
   if(any(class(x) %in% c("numeric", "integer"))) {
+    if(!is.null(set_N) && set_N %% (set_N * noisefraction) != 0){
+      stop("noisefraction must represent a fraction of set_N")
+    }
+
+    ssize <- if(add) {
+      (1 - noisefraction) * set_N
+      } else {set_N}
+
     x <- randomDat(x,
                    type = type,
                    samplesize = ssize,
                    ...)
+
+    no.replace <- set_N * noisefraction
     }
+
   if(!any(class(x) %in% c("data.frame", "configTable"))){
     stop("Invalid argument x = ", deparse(xarg))
   }
@@ -81,7 +96,6 @@ noisyDat <- function(x = 5,
   #     nrow(x) * noiselevel
   #     }
 
-  no.replace <- set_N * noisefraction
   # if (add){
   #   b <- makedat(pnoise, bias = bias, rep.rows = rep.noise)
   # } else {
@@ -98,9 +112,10 @@ noisyDat <- function(x = 5,
   b <- makedat(some(pnoise, no.replace, replace = FALSE), bias = noisebias, rep.rows = rep.noise)
 
   out <- rbind(x, b)
-  if("target" %in% attributes(x)) {
+    if("target" %in% attributes(x)) {
     attr(out, "target") <- attr(x, "target")
-  }
+    }
+  class(out) <- c("noisyDat", "data.frame")
   return(out)
 }
 
