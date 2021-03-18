@@ -5,8 +5,9 @@
 \title{noisyDat}
 \usage{
 noisyDat(
-  x = randomDat(type = type),
-  noiselevel = 0.2,
+  x = 5,
+  set_N = 20,
+  noisefraction = 0.2,
   add = TRUE,
   cleanbias = NULL,
   noisebias = NULL,
@@ -20,9 +21,6 @@ noisyDat(
 \item{x}{A data frame, configTable, or an integer. If data frame or
 configTable, this will be used as the data to which noise id added. If an
 integer, a data set is created by \code{randomDat}.}
-
-\item{noiselevel}{A numeric less than one, determines the proportion of noise
-in the generated data}
 
 \item{add}{Logical; if \code{TRUE}, noise is added to \code{x}, otherwise
 rows in \code{x} are replaced by noise}
@@ -45,6 +43,9 @@ is large enough}
 
 \item{...}{Other arguments; passed to randomDat in case \code{x} is given an
 integer value, ignored otherwise}
+
+\item{noiselevel}{A numeric less than one, determines the proportion of noise
+in the generated data}
 }
 \value{
 A data frame
@@ -53,7 +54,7 @@ A data frame
 Create a noisy data set
 }
 \details{
-Takes as input a data frame or a configTable, or creates one with
+Takes as input a data frame or a configTable, or (by default) creates one with
 \code{randomDat}, and adds or imputes a desired amount of noise rows, where
 noise row is defined as a row featuring a configuration not found in the
 input data. If \code{x} is created by \code{randomDat}, the target used to

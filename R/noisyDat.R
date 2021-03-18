@@ -137,3 +137,21 @@ makedat <- function(x, bias = NULL, rep.rows = 0L){
   }
   return(out)
 }
+
+
+#' @export
+print.noisyDat <- function(x){
+  ats <- attributes(x)
+  if (any(names(ats) == "target")) {
+    target <- ats[names(ats) == "target"][[1]]
+    print.data.frame(x)
+    cat("\n Data created from randomd target", target, "\n\n")
+  } else {
+    print.data.frame(x)
+  }
+
+}
+
+
+
+
