@@ -6,8 +6,8 @@
 \usage{
 noisyDat(
   x = randomDat(type = type),
-  noiselevel = 0.2,
-  add = TRUE,
+  samplesize = 20,
+  noisefraction = 0.2,
   cleanbias = NULL,
   noisebias = NULL,
   rep.noise = 0L,
@@ -18,14 +18,12 @@ noisyDat(
 }
 \arguments{
 \item{x}{A data frame, configTable, or an integer. If data frame or
-configTable, this will be used as the data to which noise id added. If an
+configTable, this will be used as the data to which noise is added. If an
 integer, a data set is created by \code{randomDat}.}
 
-\item{noiselevel}{A numeric less than one, determines the proportion of noise
-in the generated data}
-
-\item{add}{Logical; if \code{TRUE}, noise is added to \code{x}, otherwise
-rows in \code{x} are replaced by noise}
+\item{noisefraction}{A numeric less than one that can be expressed as a
+vulgar fraction of \code{samplesize}, determines the proportion of noise in
+the generated data.}
 
 \item{cleanbias}{Either NULL, or a vector of probability weights to use in
 sampling rows from \code{x}. Only used if \code{add = FALSE}}
@@ -33,13 +31,13 @@ sampling rows from \code{x}. Only used if \code{add = FALSE}}
 \item{noisebias}{Either NULL, or a vector of probability weights to use in
 sampling noise rows to add to or replace clean rows with}
 
-\item{rep.noise}{A numeric less than one; proportion of noise
-rows that are forced to be identical, provided that the number of noise rows
-(which depends on \code{x} and \code{noiselevel}) is large enough}
+\item{rep.noise}{A numeric less than one; proportion of noise rows that are
+forced to be identical, provided that the number of noise rows (which
+depends on \code{x} and \code{noisefraction}) is large enough}
 
 \item{rep.clean}{A numeric less than one; proportion of rows in clean data
-that are forced to be identical, given \code{add = FALSE} and the clean data set
-is large enough}
+that are forced to be identical, given \code{add = FALSE} and the clean
+data set is large enough}
 
 \item{type}{Character string; determines the type of data used}
 
@@ -53,10 +51,10 @@ A data frame
 Create a noisy data set
 }
 \details{
-Takes as input a data frame or a configTable, or creates one with
-\code{randomDat}, and adds or imputes a desired amount of noise rows, where
-noise row is defined as a row featuring a configuration not found in the
-input data. If \code{x} is created by \code{randomDat}, the target used to
-create the data is stored as attribute \code{target} in the returned data
-frame.
+Takes as input a data frame or a configTable, or (by default)
+creates one with \code{randomDat}, and adds or imputes a desired amount of
+noise rows, where noise row is defined as a row featuring a configuration
+not found in the input data. If \code{x} is created by \code{randomDat},
+the target used to create the data is stored as attribute \code{target} in
+the returned data frame.
 }

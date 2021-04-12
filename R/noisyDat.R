@@ -3,32 +3,31 @@
 #' Create a noisy data set
 #'
 #' @param x A data frame, configTable, or an integer. If data frame or
-#'   configTable, this will be used as the data to which noise id added. If an
+#'   configTable, this will be used as the data to which noise is added. If an
 #'   integer, a data set is created by \code{randomDat}.
-#' @param noiselevel A numeric less than one, determines the proportion of noise
-#'   in the generated data
-#' @param add Logical; if \code{TRUE}, noise is added to \code{x}, otherwise
-#'   rows in \code{x} are replaced by noise
+#' @param noisefraction A numeric less than one that can be expressed as a
+#'   vulgar fraction of \code{samplesize}, determines the proportion of noise in
+#'   the generated data.
 #' @param cleanbias Either NULL, or a vector of probability weights to use in
 #'   sampling rows from \code{x}. Only used if \code{add = FALSE}
 #' @param noisebias Either NULL, or a vector of probability weights to use in
 #'   sampling noise rows to add to or replace clean rows with
-#' @param rep.noise A numeric less than one; proportion of noise
-#'   rows that are forced to be identical, provided that the number of noise rows
-#'   (which depends on \code{x} and \code{noiselevel}) is large enough
+#' @param rep.noise A numeric less than one; proportion of noise rows that are
+#'   forced to be identical, provided that the number of noise rows (which
+#'   depends on \code{x} and \code{noisefraction}) is large enough
 #' @param rep.clean A numeric less than one; proportion of rows in clean data
-#'   that are forced to be identical, given \code{add = FALSE} and the clean data set
-#'   is large enough
+#'   that are forced to be identical, given \code{add = FALSE} and the clean
+#'   data set is large enough
 #' @param type Character string; determines the type of data used
 #' @param ... Other arguments; passed to randomDat in case \code{x} is given an
 #'   integer value, ignored otherwise
 #'
-#' @details Takes as input a data frame or a configTable, or (by default) creates one with
-#'   \code{randomDat}, and adds or imputes a desired amount of noise rows, where
-#'   noise row is defined as a row featuring a configuration not found in the
-#'   input data. If \code{x} is created by \code{randomDat}, the target used to
-#'   create the data is stored as attribute \code{target} in the returned data
-#'   frame.
+#' @details Takes as input a data frame or a configTable, or (by default)
+#'   creates one with \code{randomDat}, and adds or imputes a desired amount of
+#'   noise rows, where noise row is defined as a row featuring a configuration
+#'   not found in the input data. If \code{x} is created by \code{randomDat},
+#'   the target used to create the data is stored as attribute \code{target} in
+#'   the returned data frame.
 #'
 #' @returns A data frame
 
@@ -36,8 +35,9 @@
 
 #' @export
 noisyDat <- function(x = randomDat(type = type),
-                     noiselevel = 0.2,
-                     add = TRUE,
+                     samplesize = 20,
+                     noisefraction = 0.2,
+                     #add = TRUE,
                      cleanbias = NULL,
                      noisebias = NULL,
                      rep.noise = 0L,
@@ -56,20 +56,27 @@ noisyDat <- function(x = randomDat(type = type),
   allconfs <- ct2df(full.ct(x, type = type))
   pnoise <- dplyr::setdiff(allconfs, x)
   #dots <- substitute(list(...))
-  no.replace <- if(add) {
-    (noiselevel * nrow(x)) / (1 - noiselevel)
-    } else {
-      nrow(x) * noiselevel
-      }
+ # no.replace <- if(add) {
+    #(noisefraction * nrow(x)) / (1 - noisefraction)
+  #  (noisefraction * samplesize) / (1 - noisefraction)
+   # } else {
+      #nrow(x) * noisefraction
+    #  samplesize * noisefraction
+     # }
 
-
+  no.replace <- samplesize * noisefraction
   # if (add){
   #   b <- makedat(pnoise, bias = bias, rep.rows = rep.noise)
   # } else {
-  if(!add){
-    x <- makedat(some(x, nrow(x)-no.replace, replace = F),
-                 bias = cleanbias, rep.rows = rep.clean)
-  }
+  # if(!add){
+  #   x <- makedat(some(x, nrow(x)-no.replace, replace = F),
+  #                bias = cleanbias, rep.rows = rep.clean)
+  # }
+  
+  dif <- samplesize - no.replace
+  ro <- 1:nrow(x)
+  x <- makedat(x, size = dif, bias = cleanbias, rep.rows = rep.clean)
+    
 
   # }
   if (nrow(pnoise) < no.replace) {
@@ -84,10 +91,12 @@ noisyDat <- function(x = randomDat(type = type),
   return(out)
 }
 
-makedat <- function(x, bias = NULL, rep.rows = 0L){
-  if (!is.null(bias)){
-    return(x[sample(nrow(x), nrow(x), prob = bias, replace = TRUE),])
-  }
+makedat <- function(x, size = NULL, bias = NULL, rep.rows = 0L){
+  ro <- 1:nrow(x)
+  rs <- sample(ro, size = size, prob = bias, replace = TRUE)
+  # if (!is.null(bias)){
+  #   return(x[sample(nrow(x), nrow(x), prob = bias, replace = TRUE),])
+  # }
   if (!identical(rep.rows, 0L)){
     rep.rows <- rep.rows*nrow(x)
     duprow <- rep(sample(1:nrow(x), 1), rep.rows)

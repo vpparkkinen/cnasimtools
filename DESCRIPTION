@@ -6,8 +6,9 @@ Authors@R:
            family = "Parkkinen",
            role = c("aut", "cre"),
            email = "parkkinenv@gmail.com")
-Description: Provides wrappers for CNA functions commonly used in writing simulations, like selectCases and randomConds,
-             that automate common tasks like the generation of random ideal data sets 
+Description: Provides wrappers around CNA functions like selectCases and 
+             randomConds that automate common tasks like the generation of 
+             random ideal data sets 
              or data sets with a desired amount of noise.
 License: GPL (>= 3)
 Encoding: UTF-8
