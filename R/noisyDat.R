@@ -34,10 +34,11 @@
 
 
 #' @export
-noisyDat <- function(x = randomDat(type = type),
-                     samplesize = 20,
+
+noisyDat <- function(x = 5,
+                     set_N = 20,
                      noisefraction = 0.2,
-                     #add = TRUE,
+                     add = TRUE,
                      cleanbias = NULL,
                      noisebias = NULL,
                      rep.noise = 0L,
@@ -48,8 +49,41 @@ noisyDat <- function(x = randomDat(type = type),
   type <- match.arg(type)
   xarg <- substitute(x)
   dots <- list(...)
-  if ("type" %in% names(xarg) && class(xarg$type) == "character"){type <- xarg$type}
-  if(any(class(x) %in% c("numeric", "integer"))) x <- randomDat(x, type = type, ...)
+
+  if(any(class(x) %in% c("configTable", "data.frame"))){
+    x <- if(any(class(x) == "configTable")) ct2df(x) else x
+
+    no.replace <- if(add) {
+      (noisefraction * nrow(x)) / (1 - noisefraction)
+      } else {
+        nrow(x) * noisefraction
+      }
+
+  }
+
+
+
+
+  # if ("type" %in% names(xarg) && class(xarg$type) == "character"){
+  #   type <- xarg$type
+  #   }
+  if(any(class(x) %in% c("numeric", "integer"))) {
+    if(!is.null(set_N) && set_N %% (set_N * noisefraction) != 0){
+      stop("noisefraction must represent a fraction of set_N")
+    }
+
+    ssize <- if(add) {
+      (1 - noisefraction) * set_N
+      } else {set_N}
+
+    x <- randomDat(x,
+                   type = type,
+                   samplesize = ssize,
+                   ...)
+
+    no.replace <- set_N * noisefraction
+    }
+
   if(!any(class(x) %in% c("data.frame", "configTable"))){
     stop("Invalid argument x = ", deparse(xarg))
   }
@@ -63,6 +97,13 @@ noisyDat <- function(x = randomDat(type = type),
       #nrow(x) * noisefraction
     #  samplesize * noisefraction
      # }
+
+  # no.replace <- if(add) {
+  #   (noiselevel * nrow(x)) / (1 - noiselevel)
+  #   } else {
+  #     nrow(x) * noiselevel
+  #     }
+
 
   no.replace <- samplesize * noisefraction
   # if (add){
@@ -78,6 +119,7 @@ noisyDat <- function(x = randomDat(type = type),
   x <- makedat(x, size = dif, bias = cleanbias, rep.rows = rep.clean)
     
 
+  #nmod <-
   # }
   if (nrow(pnoise) < no.replace) {
     pnoise <- rbind(pnoise, some(pnoise, no.replace - nrow(pnoise)))
@@ -85,9 +127,10 @@ noisyDat <- function(x = randomDat(type = type),
   b <- makedat(some(pnoise, no.replace, replace = FALSE), bias = noisebias, rep.rows = rep.noise)
 
   out <- rbind(x, b)
-  if("target" %in% attributes(x)) {
+    if("target" %in% attributes(x)) {
     attr(out, "target") <- attr(x, "target")
-  }
+    }
+  class(out) <- c("noisyDat", "data.frame")
   return(out)
 }
 
@@ -111,3 +154,21 @@ makedat <- function(x, size = NULL, bias = NULL, rep.rows = 0L){
   }
   return(out)
 }
+
+
+#' @export
+print.noisyDat <- function(x){
+  ats <- attributes(x)
+  if (any(names(ats) == "target")) {
+    target <- ats[names(ats) == "target"][[1]]
+    print.data.frame(x)
+    cat("\n Data created from randomd target", target, "\n\n")
+  } else {
+    print.data.frame(x)
+  }
+
+}
+
+
+
+

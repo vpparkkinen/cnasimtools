@@ -5,9 +5,16 @@
 \title{noisyDat}
 \usage{
 noisyDat(
+<<<<<<< HEAD
   x = randomDat(type = type),
   samplesize = 20,
   noisefraction = 0.2,
+=======
+  x = 5,
+  set_N = 20,
+  noisefraction = 0.2,
+  add = TRUE,
+>>>>>>> 3783b28d6b220d21c4851a23b09c2fcb6acbdf70
   cleanbias = NULL,
   noisebias = NULL,
   rep.noise = 0L,
@@ -21,9 +28,14 @@ noisyDat(
 configTable, this will be used as the data to which noise is added. If an
 integer, a data set is created by \code{randomDat}.}
 
+<<<<<<< HEAD
 \item{noisefraction}{A numeric less than one that can be expressed as a
 vulgar fraction of \code{samplesize}, determines the proportion of noise in
 the generated data.}
+=======
+\item{add}{Logical; if \code{TRUE}, noise is added to \code{x}, otherwise
+rows in \code{x} are replaced by noise}
+>>>>>>> 3783b28d6b220d21c4851a23b09c2fcb6acbdf70
 
 \item{cleanbias}{Either NULL, or a vector of probability weights to use in
 sampling rows from \code{x}. Only used if \code{add = FALSE}}
@@ -43,6 +55,9 @@ data set is large enough}
 
 \item{...}{Other arguments; passed to randomDat in case \code{x} is given an
 integer value, ignored otherwise}
+
+\item{noiselevel}{A numeric less than one, determines the proportion of noise
+in the generated data}
 }
 \value{
 A data frame
@@ -51,10 +66,19 @@ A data frame
 Create a noisy data set
 }
 \details{
+<<<<<<< HEAD
 Takes as input a data frame or a configTable, or (by default)
 creates one with \code{randomDat}, and adds or imputes a desired amount of
 noise rows, where noise row is defined as a row featuring a configuration
 not found in the input data. If \code{x} is created by \code{randomDat},
 the target used to create the data is stored as attribute \code{target} in
 the returned data frame.
+=======
+Takes as input a data frame or a configTable, or (by default) creates one with
+\code{randomDat}, and adds or imputes a desired amount of noise rows, where
+noise row is defined as a row featuring a configuration not found in the
+input data. If \code{x} is created by \code{randomDat}, the target used to
+create the data is stored as attribute \code{target} in the returned data
+frame.
+>>>>>>> 3783b28d6b220d21c4851a23b09c2fcb6acbdf70
 }

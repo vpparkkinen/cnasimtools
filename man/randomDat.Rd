@@ -9,6 +9,7 @@ randomDat(
   condtype = c("csf", "asf"),
   type = c("cs", "mv", "fs"),
   mvlevels = if (type == "mv") c(0L:3L) else NULL,
+  samplesize = NULL,
   ...
 )
 }
