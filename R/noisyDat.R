@@ -68,7 +68,7 @@ noisyDat <- function(x = 5,
   #   type <- xarg$type
   #   }
   if(any(class(x) %in% c("numeric", "integer"))) {
-    if(!is.null(set_N) && set_N %% (set_N * noisefraction) != 0){
+    if(!is.null(set_N) && (set_N * noisefraction) %% 1 != 0){
       stop("noisefraction must represent a fraction of set_N")
     }
 
@@ -105,7 +105,7 @@ noisyDat <- function(x = 5,
   #     }
 
 
-  no.replace <- samplesize * noisefraction
+ # no.replace <- samplesize * noisefraction
   # if (add){
   #   b <- makedat(pnoise, bias = bias, rep.rows = rep.noise)
   # } else {
@@ -114,8 +114,8 @@ noisyDat <- function(x = 5,
   #                bias = cleanbias, rep.rows = rep.clean)
   # }
   
-  dif <- samplesize - no.replace
-  ro <- 1:nrow(x)
+  dif <- set_N - no.replace
+ # ro <- 1:nrow(x)
   x <- makedat(x, size = dif, bias = cleanbias, rep.rows = rep.clean)
     
 
@@ -135,8 +135,8 @@ noisyDat <- function(x = 5,
 }
 
 makedat <- function(x, size = NULL, bias = NULL, rep.rows = 0L){
-  ro <- 1:nrow(x)
-  rs <- sample(ro, size = size, prob = bias, replace = TRUE)
+  #ro <- 1:nrow(x)
+  #rs <- sample(ro, size = size, prob = bias, replace = TRUE)
   # if (!is.null(bias)){
   #   return(x[sample(nrow(x), nrow(x), prob = bias, replace = TRUE),])
   # }
