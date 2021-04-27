@@ -5,45 +5,69 @@
 #' @param x A data frame, configTable, or an integer. If data frame or
 #'   configTable, this will be used as the data that is manipulated. If an
 #'   integer, a data set over \code{x} factors is created by \code{randomDat}.
-#' @param set_N Integer determining the number of cases in the created data set.
+#' @param set_N \code{NULL}, or an integer determining the number of cases in
+#'   the created data set, if \code{x} is given an integer value.
 #' @param add Logical; if \code{TRUE}, noise will be added to a data set, else
 #'   noise rows will replace clean rows.
 #' @param noisefraction A numeric less than one that can be expressed as a
-#'   vulgar fraction of \code{samplesize}, determining the proportion of noise
-#'   in the generated data.
-#' @param cleanbias Either NULL, or a vector of probability weights to use in
-#'   sampling rows from \code{x}. Only used if \code{add = FALSE}. This argument
-#'   is very impractical to use and will probably be removed.
-#' @param noisebias Either NULL, or a vector of probability weights to use in
-#'   sampling noise rows to add to or replace clean rows with. This argument is
-#'   very impractical to use and will probably be removed.
-#' @param rep.noise A numeric less than one; proportion of noise rows that are
-#'   forced to be identical, provided that the number of noise rows (which
-#'   depends on \code{x} and \code{noisefraction}) is large enough. This
+#'   vulgar fraction of \code{set_N}, determining the proportion of noise in the
+#'   generated data.
+#' @param cleanbias Either \code{NULL}, or a vector of probability weights to
+#'   use in sampling rows from \code{x}. Only used if \code{add = FALSE}. This
+#'   argument is a bit impractical to use and will probably be removed.
+#' @param noisebias Either \code{NULL}, or a vector of probability weights to
+#'   use in sampling noise rows to add to or replace clean rows with. This
+#'   argument is a bit impractical to use and will probably be removed.
+#' @param rep.noise A positive numeric less than one; proportion of noise rows
+#'   that are forced to be identical, provided that the number of noise rows
+#'   (which depends on \code{x} and \code{noisefraction}) is large enough. This
 #'   argument is very impractical to use and will probably be removed.
-#' @param rep.clean A numeric less than one; proportion of rows in clean data
-#'   that are forced to be identical, given \code{add = FALSE} and the clean
-#'   data set is large enough. This argument is very impractical to use and will
-#'   probably be removed.
+#' @param rep.clean A positive numeric less than one; proportion of rows in
+#'   clean data that are forced to be identical, given \code{add = FALSE} and
+#'   the clean data set is large enough. This argument is very impractical to
+#'   use and will probably be removed.
 #' @param type Character string; determines the type of data used
-#' @param ... Other arguments; passed to randomDat in case \code{x} is given an
-#'   integer value, ignored otherwise.
+#' @param ... Other arguments. Passed to \code{randomDat} in case \code{x} is
+#'   given an integer value, ignored otherwise.
 #'
-#' @details Takes as input a data frame or a configTable, or (by default)
-#'   creates one with \code{randomDat}, and adds rows or replaces rows with
-#'   noise, where noise row is defined as a row featuring a configuration not
-#'   found in the input data or the data set created by \code{randomDat} if
-#'   \code{x} is integer value. In the latter case the noise rows are always
-#'   incompatible with the data-generating structure. If \code{x} is created by
-#'   \code{randomDat}, the target structure that was used to create the data is
-#'   stored as attribute \code{target} in the returned data frame. When creating
-#'   an ideal data set from a randomly generated target and manipulating that to
-#'   produce a noisy data set, the ideal data itself may be end up being
-#'   fragmented even before adding noise, or may feature multiple identical
-#'   rows, depending on the the number of asfs in the structure that is
-#'   used to generate the ideal data, and the combination of values of
-#'   \code{set_N} and \code{noisefraction}. To alleviate this, when the data
-#'   type is "cs", the function will automatically choose a target
+#' @details Takes as input a data frame, a configTable, or (by default) an
+#'   integer. If an integer value is given, a data set is created  with
+#'   \code{randomDat}. Then, the data set is manipulated by adding to it, or
+#'   replacing rows with noise, where noise is defined as configurations not not
+#'   present in the unmanipulated data. In the case where the clean data is
+#'   created within the function, the noise rows are always incompatible with
+#'   the data-generating structure. In this case, the target structure that was
+#'   used to create the data is stored as attribute \code{target} of the
+#'   returned data frame.
+#'
+#'   Note that when creating a random data set, i.e. when \code{x} is given an
+#'   integer value, the value of the \code{add} argument does _not_ guarantee
+#'   that either every configuration compatible with the target is present or
+#'   that some configurations are absent in the resulting noisy data set.
+#'   Depending on the combination of values of \code{x}, \code{set_N},
+#'   \code{noisefraction}, and the number of asfs in the target structure used
+#'   to generate the data, some rows of ideal data may have to be either
+#'   duplicated or removed even before imputing noise. This may lead to a
+#'   situation where the effect of the \code{add} argument is effectively
+#'   overriden in the sense that every ideal configuration is present even
+#'   though \code{add = FALSE}, or some are missing even though \code{add =
+#'   TRUE}. For example, in crisp-set data, a structure with two asfs over five
+#'   factors will return an ideal data set of eight rows, with each unique
+#'   configuration compatible with the target exhibited once. If the desired
+#'   sample size is, say, 16 rows, desired proportion of noise is 0.25, and
+#'   \code{add = FALSE}, this means that four rows of ideal data will have to be
+#'   duplicated in order to meet the constraints defined by \code{set_N} and
+#'   \code{noisefraction}. To alleviate this issue, when the data type is "cs"
+#'   and no explicit \code{n.asf} argument is given, the function will
+#'   automatically choose a target with a number of asfs such that the
+#'   possibility of fragmentation or duplicating ideal rows before imputing
+#'   noise is minimized. If no value is provided for \code{set_N}, the function
+#'   will try to find a suitable combination of sample size and number of asfs
+#'   in the target to minimize fragmentation or duplicate ideal rows relative to
+#'   the value of \code{x}.Ultimately, however, it is up to the user to choose
+#'   reasonable values for these arguments, depending on one's use case.
+#'
+#'
 #'
 #' @returns A data frame
 
@@ -52,7 +76,7 @@
 #' @export
 
 noisyDat <- function(x = 5,
-                     set_N = 20,
+                     set_N = NULL,
                      noisefraction = 0.2,
                      add = TRUE,
                      cleanbias = NULL,
@@ -66,16 +90,21 @@ noisyDat <- function(x = 5,
   type <- match.arg(type)
   xarg <- substitute(x)
   dots <- list(...)
+  
 
   if(any(class(x) %in% c("configTable", "data.frame"))){
     x <- if(any(class(x) == "configTable")) ct2df(x) else x
 
     no.replace <- if(add) {
-      (noisefraction * nrow(x)) / (1 - noisefraction)
+      #(noisefraction * nrow(x)) / (1 - noisefraction)
+      (nrow(x) / (1-noisefraction)) - nrow(x)
       } else {
         nrow(x) * noisefraction
       }
-
+    x <- makedat(x, 
+                 size = if (add) nrow(x) else nrow(x) - no.replace, 
+                 bias = cleanbias, 
+                 rep.rows = rep.clean)
   }
 
 
@@ -88,10 +117,22 @@ noisyDat <- function(x = 5,
     if(!is.null(set_N) && (set_N * noisefraction) %% 1 != 0){
       stop("noisefraction must represent a fraction of set_N")
     }
+    
+    if(type == "mv" & is.null(set_N)){
+      stop("For multi-value data, desired sample size must be set manually with set_N")
+    }
 
-    ssize <- if(add) {
-      (1 - noisefraction) * set_N
-      } else {set_N}
+    if (!is.null(set_N)){ 
+      if(add) {
+        ssize <- (1 - noisefraction) * set_N
+        no.replace <- set_N - ssize
+        } else {
+          ssize <- set_N
+          no.replace <- set_N * noisefraction
+        }
+    } else {
+      ssize <- set_N
+    }
     
     if(type == "cs"){
       if(any(names(dots) == "n.asf")){
@@ -100,27 +141,61 @@ noisyDat <- function(x = 5,
         all_n <- 2**x
         perm_nasfs <- 1:(x-2)
         nn_rown <- sapply(perm_nasfs, function(x) all_n / 2^x)
-        diffs <- abs(ssize - nn_rown)
-        #min(abs(set_N - nn_rown))
-        nasfs <- which(diffs == min(diffs))
+        if (is.null(ssize)){
 
-        # maxrow <- all_n / 2 #maximum no. of clean rows w/ n.asf=1
-        # maxmod <- all_n / maxrow
-        # f <- function(x, ss, maxs) abs(ss - (maxs / (2*x)))
-        # optimize(f, c(1,x-2), ss = set_N, maxs = all_n)
-        # nasffactor <- all_n / 2
-        # 
-        # nasf <- all_n %/% 2*set_N
+          if(!add){
+            fc <- MASS::fractions(noisefraction)
+            dn <- as.integer(gsub("^\\d*/", "", fc))
+            #nu <- as.integer(gsub("/\\d*$", "", fc))
+            divs <- nn_rown %/% dn
+            if(max(divs) == 0){ssize <- dn} else {
+              dividx <- which(divs > 0)
+              ssize <- nn_rown[sample(dividx, 1)]
+            }
+            no.replace <- ssize * noisefraction
+            diffs <- abs(ssize - nn_rown)
+            nasfs <- which(diffs == min(diffs))
+          } else {
+              fc <- MASS::fractions(1 - noisefraction)
+              dn <- as.integer(gsub("^\\d*/", "", fc))
+              nu <- as.integer(gsub("/\\d*$", "", fc))
+              divs <- nn_rown %/% nu
+              
+              if(max(divs) == 0){
+                ssize <- nu
+                no.replace <- dn - nu
+                } else {
+                  dividx <- which(divs > 0)
+                  pick <- sample(dividx, 1)
+                  mplier <- divs[pick]
+                  ssize <- nu * mplier
+                  no.replace <- (dn * mplier) - ssize
+                  diffs <- nn_rown %/% ssize
+                  nasfs <- min(which(diffs == min(diffs)))
+                }
+            }
+        } else {
+          diffs <- abs(ssize - nn_rown)
+          #min(abs(set_N - nn_rown))
+          nasfs <- which(diffs == min(diffs))
+          }
         }
     }
     x <- randomDat(x,
                    type = type,
                    samplesize = ssize,
-                   n.asf = max(nasfs)
-                   )
-
-    no.replace <- set_N * noisefraction
+                   n.asf = if (type == "cs") max(nasfs) else NULL
+    )
+    
+    x <- makedat(x, 
+                 size = if (add) nrow(x) else nrow(x) - no.replace, 
+                 bias = cleanbias, 
+                 rep.rows = rep.clean)
+    
     }
+    
+    #no.replace <- nrow(x) * noisefraction
+    
 
   if(!any(class(x) %in% c("data.frame", "configTable"))){
     stop("Invalid argument x = ", deparse(xarg))
@@ -152,9 +227,9 @@ noisyDat <- function(x = 5,
   #                bias = cleanbias, rep.rows = rep.clean)
   # }
   
-  dif <- set_N - no.replace
+  #dif <- set_N - no.replace
  # ro <- 1:nrow(x)
-  x <- makedat(x, size = dif, bias = cleanbias, rep.rows = rep.clean)
+  
     
 
   #nmod <-
@@ -173,6 +248,7 @@ noisyDat <- function(x = 5,
   class(out) <- c("noisyDat", "data.frame")
   return(out)
 }
+
 
 makedat <- function(x, size = NULL, bias = NULL, rep.rows = 0L){
   #ro <- 1:nrow(x)
