@@ -51,7 +51,11 @@ clean data that are forced to be identical, given \code{add = FALSE} and
 the clean data set is large enough. This argument is very impractical to
 use and will probably be removed.}
 
-\item{type}{Character string; determines the type of data used}
+\item{type}{Character string; determines the type of data used.}
+
+\item{verbose}{Logical. If \code{TRUE}, additional information about
+the added noise, and possible fragmentation / duplicate rows
+in the clean data (before adding noise) is printed.}
 
 \item{...}{Other arguments. Passed to \code{randomDat} in case \code{x} is
 given an integer value, ignored otherwise.}
