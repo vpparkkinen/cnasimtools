@@ -20,22 +20,24 @@ noisyDat(
 }
 \arguments{
 \item{x}{A data frame, configTable, or an integer. If data frame or
-configTable, this will be used as the data that is manipulated. If an
-integer, a data set over \code{x} factors is created by \code{randomDat}.}
+configTable, \code{x} will be treated as clean data that is manipulated by
+adding to it or replacing observations with noise. If an integer, a data
+set over \code{x} alphabetically named factors is created by
+\code{randomDat}, and this is treated as the clean data.}
 
 \item{set_N}{\code{NULL}, or an integer determining the number of cases in
 the created data set, if \code{x} is given an integer value.}
 
-\item{noisefraction}{A numeric less than one that can be expressed as a
-vulgar fraction of \code{set_N}, determining the proportion of noise in the
-generated data.}
+\item{noisefraction}{A numeric less than one determining the proportion of
+noise in the generated data. If \code{set_N} is other than \code{NULL}, the
+value must be expressible as a vulgar fraction of \code{set_N}.}
 
 \item{add}{Logical; if \code{TRUE}, noise will be added to a data set, else
 noise rows will replace clean rows.}
 
 \item{cleanbias}{Either \code{NULL}, or a vector of probability weights to
-use in sampling rows from \code{x}. Only used if \code{add = FALSE}. This
-argument is a bit impractical to use and will probably be removed.}
+use in sampling rows from clean data. This argument is a bit impractical to
+use and will probably be removed.}
 
 \item{noisebias}{Either \code{NULL}, or a vector of probability weights to
 use in sampling noise rows to add to or replace clean rows with. This
@@ -53,9 +55,9 @@ use and will probably be removed.}
 
 \item{type}{Character string; determines the type of data used.}
 
-\item{verbose}{Logical. If \code{TRUE}, additional information about
-the added noise, and possible fragmentation / duplicate rows
-in the clean data (before adding noise) is printed.}
+\item{verbose}{Logical. If \code{TRUE}, additional information about the
+added noise, and possible fragmentation / duplicate rows in the clean data
+(before adding noise) is printed.}
 
 \item{...}{Other arguments. Passed to \code{randomDat} in case \code{x} is
 given an integer value, ignored otherwise.}
@@ -64,43 +66,67 @@ given an integer value, ignored otherwise.}
 A data frame
 }
 \description{
-Create a noisy data set
+Create a noisy data set by imputing noise to ideal data that conforms to a
+randomly generated causal structure, or by imputing noise to user-provided
+data set.
 }
 \details{
-Takes as input a data frame, a configTable, or (by default) an
-integer. If an integer value is given, a data set is created  with
-\code{randomDat}. Then, the data set is manipulated by adding to it, or
-replacing rows with noise, where noise is defined as configurations not not
-present in the unmanipulated data. In the case where the clean data is
-created within the function, the noise rows are always incompatible with
-the data-generating structure. In this case, the target structure that was
-used to create the data is stored as attribute \code{target} of the
+\code{noisyDat} simplifies the process of simulating noisy data with
+the \code{\link[cna]{cna}} package. It provides two functionalities based
+on the value of the argument \code{x}. If \code{x} is given an integer
+value, an exhaustive, ideal data set that conforms to a randomly generated
+target structure is first created with \code{\link{randomDat}}. This data
+set is used as the clean data that is manipulated by adding to it, or
+replacing rows with noise. If \code{x} is a data set  given as a data frame
+or a configTable object, that data set is used as the clean data that is
+manipulated with noise. In either case, noise is defined as configurations
+not found in the clean data.
+
+Additionally, the argument \code{cleanbias} can be used to introduce the
+chance of randomly fragmenting the clean data even before making it noisy.
+This is done by sampling rows from the initial clean data with replacement,
+using the probability weights given in \code{cleanbias}. This results in a
+data set of the same size as the initial clean data, but with some rows
+possibly replaced by duplicates of other clean rows. This, possibly
+fragmented data set, is then used as the clean data that is manipulated by
+noise. Similarly, some noise configurations can be made more likely to
+occur than others by using the \code{noisebias} argument. In the case where
+\code{x} is an integer and the clean data is created within the function by
+\code{randomDat}, the noise rows are always incompatible with structure
+that created the clean data. In this case, the target structure that was
+used to create the clean data is stored as attribute \code{target} of the
 returned data frame.
 
-Note that when creating a random data set, i.e. when \code{x} is given an
-integer value, the value of the \code{add} argument does \emph{not} guarantee
-that either every configuration compatible with the target is present or
-that some configurations are absent in the resulting noisy data set.
-Depending on the combination of values of \code{x}, \code{set_N},
-\code{noisefraction}, and the number of asfs in the target structure used
-to generate the data, some rows of ideal data may have to be either
-duplicated or removed even before imputing noise. This may lead to a
-situation where the effect of the \code{add} argument is effectively
-overriden in the sense that every ideal configuration is present even
-though \code{add = FALSE}, or some are missing even though \code{add =
-  TRUE}. For example, in crisp-set data, a structure with two asfs over five
-factors will return an ideal data set of eight rows, with each unique
-configuration compatible with the target exhibited once. If the desired
-sample size is, say, 16 rows, desired proportion of noise is 0.25, and
-\code{add = FALSE}, this means that four rows of ideal data will have to be
-duplicated in order to meet the constraints defined by \code{set_N} and
-\code{noisefraction}. To alleviate this issue, when the data type is "cs"
-and no explicit \code{n.asf} argument is given, the function will
-automatically choose a target with a number of asfs such that the
-possibility of fragmentation or duplicating ideal rows before imputing
-noise is minimized. If no value is provided for \code{set_N}, the function
-will try to find a suitable combination of sample size and number of asfs
-in the target to minimize fragmentation or duplicate ideal rows relative to
-the value of \code{x}.Ultimately, however, it is up to the user to choose
-reasonable values for these arguments, depending on one's use case.
+Note that when creating a data set from randomly generated target, i.e.
+when \code{x} is given an integer value, the value of the \code{add}
+argument does \emph{not} guarantee that either every configuration compatible
+with the target is present or that some configurations are absent in the
+resulting noisy data set. Depending on the combination of values of
+\code{x}, \code{set_N}, \code{noisefraction}, and the number of asfs in the
+target structure used to generate the data, some rows of ideal data may
+have to be either duplicated or removed even before imputing noise, to meet
+the desired combination of number of rows and proportion of noise. This may
+lead to a situation where the effect of the \code{add} argument is
+effectively overriden in the sense that every ideal configuration is
+present even though \code{add = FALSE}, or some are missing even though
+\code{add = TRUE}. For example, in crisp-set data, a structure with two
+asfs over five factors will return an ideal data set of eight rows, with
+each unique configuration compatible with the target exhibited once. If the
+desired sample size is set to 16 rows by \code{set_N = 16}, and in addition
+\code{add = FALSE} and \code{noisefraction = 0.25}, meaning that 4 out of
+the 16 rows should be noise (0.25 = 4/16), this means that four rows of
+ideal data will have to be duplicated in order to meet the constraints
+defined by \code{set_N} and \code{noisefraction}, i.e. 16 rows with 4 rows
+incompatible with the target. It is thus possible that every configuration
+compatible with the data generating structure is present in the resulting
+noisy data, even though \code{add = FALSE}. To alleviate this issue, when
+the data type is "cs" and no explicit \code{n.asf} argument is given in
+\code{...}, the function will automatically choose a target with a number
+of asfs such that the possibility of fragmentation or duplicating ideal
+rows before imputing noise is minimized. If no value is provided for
+\code{set_N}, the function will try to find a suitable combination of
+sample size and number of asfs in the target to minimize fragmentation or
+duplicate ideal rows relative to the value of \code{x} alone. Ultimately,
+however, it is up to the user to choose reasonable values for these
+arguments, depending on one's use case.
 }
