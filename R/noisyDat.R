@@ -113,6 +113,7 @@ noisyDat <- function(x = 5,
                      rep.noise = 0L,
                      rep.clean = 0L,
                      type = c("cs", "mv", "fs"),
+                     mvlevels = if (type == "mv") c(0L:3L) else NULL,
                      verbose = FALSE,
                      ...){
 
@@ -150,6 +151,12 @@ noisyDat <- function(x = 5,
     if(type == "mv" & is.null(set_N)){
       stop("For multi-value data, desired sample size must be set manually with set_N")
     }
+    
+    # if(type == "mv") {
+    #   
+    #   if (is.null(set_N))
+    #   stop("For multi-value data, desired sample size must be set manually with set_N")
+    # }
 
     if (!is.null(set_N)){ 
       if(add) {
@@ -163,9 +170,11 @@ noisyDat <- function(x = 5,
       ssize <- set_N
     }
     
-    if(type == "cs"){
+    if(type %in% c("cs", "mv")){      #don't need this condition
+      factorlevels <- if (type == "cs") 2 else max(mvlevels)
       if(any(names(dots) == "n.asf")){
-      nasf <- dots$n.asf
+      nasfs <- dots$n.asf
+      
       } else {
         all_n <- 2**x
         perm_nasfs <- 1:(x-2)
