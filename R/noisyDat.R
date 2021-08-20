@@ -147,9 +147,9 @@ noisyDat <- function(x = 5,
       stop("noisefraction must represent a fraction of set_N")
     }
     
-    if(type == "mv" & is.null(set_N)){
-      stop("For multi-value data, desired sample size must be set manually with set_N")
-    }
+    # if(type == "mv" & is.null(set_N)){
+    #   stop("For multi-value data, desired sample size must be set manually with set_N")
+    # }
 
     if (!is.null(set_N)){ 
       if(add) {
@@ -163,10 +163,16 @@ noisyDat <- function(x = 5,
       ssize <- set_N
     }
     
+    if(type == "mv"){
+      
+    }
+    
+    
     if(type == "cs"){
       if(any(names(dots) == "n.asf")){
-      nasf <- dots$n.asf
+      nasfs <- dots$n.asf
       } else {
+        
         all_n <- 2**x
         perm_nasfs <- 1:(x-2)
         nn_rown <- sapply(perm_nasfs, function(x) all_n / 2^x)
@@ -314,7 +320,7 @@ print.noisyDat <- function(x, verbose = attr(x, "verbose"),...){
   if (verbose){
     if (any(names(ats) == "fragmented")){
       cat("Fragmentation in clean data: ", 
-          ats[["fragmented"]], "rows", "\n")
+          abs(ats[["fragmented"]]), "rows missing", "\n")
     }
     if (any(names(ats) == "duplicaterows")){
       cat("Duplicated rows in clean data: ", 

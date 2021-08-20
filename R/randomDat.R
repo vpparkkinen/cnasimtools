@@ -100,27 +100,55 @@ randomDat <- function(x = 5,
 
 
   if (ncol(df) < ncol(x[[1]])){df <- eval.parent(call)}
-
-  fragmented <- 0L
-  duplicaterows <- 0L
+  
+  # fragmented <- 0L
+  # duplicaterows <- 0L
+  # 
   attributes(df)$target <- mod
 
   if(!is.null(samplesize)){
-    gap <- samplesize - nrow(df)
-    if (gap == 0){df <- df} else if(gap < 0){
-      fragmented <- gap
-      df <- df[sample(1:nrow(df), nrow(df) + gap),]
-    } else {
-      n <- samplesize %/% nrow(df)
-      nmod <- samplesize - (n*nrow(df))
-      duplicaterows <- nmod
-      if (n == 1) {predf <- df} else {
-        predf <- do.call(rbind, rep(list(df), n))
-      }
-     df <- rbind(predf, df[sample(1:nrow(df), nmod),])
+    df <- resize(df = df, samplesize = samplesize)
+    # gap <- samplesize - nrow(df)
+    # if (gap == 0){df <- df} else if(gap < 0){
+    #   fragmented <- gap
+    #   df <- df[sample(1:nrow(df), nrow(df) + gap),]
+    # } else {
+    #   n <- samplesize %/% nrow(df)
+    #   nmod <- samplesize - (n*nrow(df))
+    #   duplicaterows <- nmod
+    #   if (n == 1) {predf <- df} else {
+    #     predf <- do.call(rbind, rep(list(df), n))
+    #   }
+    #  df <- rbind(predf, df[sample(1:nrow(df), nmod),])
+    # }
+  }
+  # attr(df, "fragmented") <- fragmented
+  # attr(df, "duplicaterows") <- duplicaterows
+  return(df)
+}
+
+
+resize <- function(df, samplesize){
+  fragmented <- 0L
+  duplicaterows <- 0L
+  gap <- samplesize - nrow(df)
+  if (gap == 0){df <- df} else if(gap < 0){
+    fragmented <- gap
+    df <- df[sample(1:nrow(df), nrow(df) + gap),]
+  } else {
+    n <- samplesize %/% nrow(df)
+    nmod <- samplesize - (n*nrow(df))
+    duplicaterows <- nmod
+    if (n == 1) {predf <- df} else {
+      predf <- do.call(rbind, rep(list(df), n))
     }
+   df <- rbind(predf, df[sample(1:nrow(df), nmod),])
   }
   attr(df, "fragmented") <- fragmented
   attr(df, "duplicaterows") <- duplicaterows
   return(df)
+}
+
+f <- function(a,b){
+  t <- a+b
 }
