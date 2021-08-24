@@ -163,9 +163,26 @@ noisyDat <- function(x = 5,
       ssize <- set_N
     }
     
-    if(type == "mv"){
-      
-    }
+    # if(type == "mv"){
+    #   fc <- MASS::fractions(noisefraction)
+    #   dn <- as.integer(gsub("^\\d*/", "", fc))
+    #   nu <- as.integer(gsub("/\\d*$", "", fc))
+    #   x <- randomDat(x, type=type, mvlevels = mvlevels)
+    #   if(any(names(dots) == "mvlevels")){
+    #     mvlevels <- mvlevels
+    #     } else {
+    #       mvlevels <- formals(randomDat)$mvlevels
+    #     }
+    #   if(!add){
+    #     
+    #     rem <- nrow(x) %% dn
+    #     #div <- nrow(x) %/% dn
+    #     x <- resize(x, nrow(x) + dn-rem)
+    #     no.replace <- nrow(x) * noisefraction
+    #   } else {
+    #     
+    #   }
+    # }
     
     
     if(type == "cs"){
@@ -181,11 +198,14 @@ noisyDat <- function(x = 5,
           if(!add){
             fc <- MASS::fractions(noisefraction)
             dn <- as.integer(gsub("^\\d*/", "", fc))
-            #nu <- as.integer(gsub("/\\d*$", "", fc))
+            nu <- as.integer(gsub("/\\d*$", "", fc))
             divs <- nn_rown %/% dn
+            rems <- nn_rown %% dn
             if(max(divs) == 0){ssize <- dn} else {
               dividx <- which(divs > 0)
-              ssize <- nn_rown[sample(dividx, 1)]
+              pick <- sample(dividx, 1)
+              #ssize <- nn_rown[pick] + rems[pick]
+              ssize <- pick * dn
             }
             no.replace <- ssize * noisefraction
             diffs <- abs(ssize - nn_rown)
@@ -285,24 +305,43 @@ noisyDat <- function(x = 5,
 }
 
 
-makedat <- function(x, size = NULL, bias = NULL, rep.rows = 0L){
+makedat <- function(x, size = nrow(x), bias = NULL, rep.rows = 0L){
   #ro <- 1:nrow(x)
   #rs <- sample(ro, size = size, prob = bias, replace = TRUE)
-  if (!is.null(bias)){
-    return(x[sample(nrow(x), nrow(x), prob = bias, replace = TRUE),])
-  } 
-  if (!identical(rep.rows, 0L)){
-    rep.rows <- rep.rows*nrow(x)
-    duprow <- rep(sample(1:nrow(x), 1), rep.rows)
-    if (length(duprow) >= nrow(x)){
-      out <- x[duprow,]
-    } else {
-      tempout <- dplyr::setdiff(x, x[duprow,])
-      out <- rbind(tempout[1:(nrow(tempout)-rep.rows+1),], x[duprow,])
-    }
+  if (nrow(x) != size){
+    ro <- 1:nrow(x)
+    rs <- sample(ro, size = size, prob = bias, replace = FALSE)
+    out <- x[rs, ]
   } else {
     out <- x
   }
+  
+  # if (!is.null(bias)){
+  #   return(x[sample(nrow(x), nrow(x), prob = bias, replace = TRUE),])
+  # } 
+# 
+#   if (!identical(rep.rows, 0L)){
+#     rep.rows <- rep.rows*nrow(x)
+#     duprow <- rep(sample(1:nrow(x), 1), rep.rows)
+#     if (length(duprow) >= nrow(x)){
+#       out <- x[duprow,]
+#     } else {
+#       tempout <- dplyr::setdiff(x, x[duprow,])
+#       out <- rbind(tempout[1:(nrow(tempout)-rep.rows+1),], x[duprow,])
+#     }
+#   } else {
+#     out <- x
+#   }
+  if (!identical(rep.rows, 0L)){
+    #rep.rows <- rep.rows*nrow(out)
+    stopifnot(rep.rows <= nrow(out))
+      rows <- 1:nrow(out)
+      duprow <- rep(sample(1:nrow(out), 1), rep.rows)
+      rows <- rows[which(rows!=duprow[1])]
+      cdx <- sample(rows, (length(rows)+1)-length(duprow), replace = FALSE)
+      r_indices <- c(cdx, duprow)
+      out <- out[r_indices,]
+    }
   return(out)
 }
 

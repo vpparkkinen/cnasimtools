@@ -22,10 +22,15 @@ nrow(df)
 nrow(df)/3
 
 
-ct2 <- full.ct(list(A = 0:2, B = 0:2, C = 0:2))
+ct2 <- full.ct(list(A = 0:2, B = 0:2, C = 0:2, D=0:2))
 df2 <- selectCases("A=1*B=1<->C=1", ct2)  
 
 nrow(df2)
+
+ct2 <- ct2df(ct2)
+
+selectCases("(A=1*B=1<->C=1)*(D=1+B=2<->C=2)", ct2)
+
 
 dplyr::setdiff(ct2df(ct2), ct2df(df2))
  
