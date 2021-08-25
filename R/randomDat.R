@@ -82,9 +82,21 @@ randomDat <- function(x = 5,
 
   x <- list(x = x)
   rargs <- if(length(randomCondsArgs) < 1){x} else {c(x, randomCondsArgs)}
-  mod <- if(ctype == "csf"){do.call(cna::randomCsf, rargs)}else{
-    do.call(cna::randomAsf, rargs)
+  if(ctype == "csf"){
+    check <- FALSE
+    while(isFALSE(check)){
+      mod <- do.call(cna::randomCsf, rargs) 
+      check <- check_modliterals(mod = mod, x = ncol(x$x))
     }
+    
+    }else{
+      while(isFALSE(check)){
+        mod <- do.call(cna::randomAsf, rargs)
+        check <- check_modliterals(mod = mod, x = ncol(x$x))
+      }
+      
+    }
+  
 
   #xsc <- list(x = x)
   sargs <- if(length(selectCasesArgs) < 1){c(x, list(mod))} else {c(x, mod, selectCasesArgs)}
@@ -127,6 +139,16 @@ randomDat <- function(x = 5,
   return(df)
 }
 
+
+check_modliterals <- function(mod, x){
+  lits <- gsub("[^[[:alpha:]]", "", mod)
+  lits <- toupper(lits)
+  lits <- unique(unlist(strsplit(lits, "")))
+  lits_len <- length(lits)
+  if(lits_len != x){return(FALSE)} else {
+    return(TRUE)
+  }
+}
 
 resize <- function(df, samplesize){
   fragmented <- 0L
