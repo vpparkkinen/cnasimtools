@@ -222,7 +222,7 @@ noisyDat <- function(x = 5,
               if(divs[nasfs] == 0){
                 ssize <- dn
               } else {
-                  pick <- divs[nasfs] + 1
+                  pick <- divs[nasfs]
                   ssize <- pick * dn
                   }
             } else {
@@ -267,12 +267,16 @@ noisyDat <- function(x = 5,
             #diffs <- abs(nn_rown - ssize)
             diffs <- nn_rown - ssize
             if(any(diffs == 0)){
-              nasfs <- which(diffs == 0)
+              nasfs <- if(is.null(nasfs)) which(diffs == 0) else nasfs
+            } else if (!any(diffs < 0)){
+              nasfs <- if(is.null(nasfs)) which(diffs == min(diffs)) else nasfs  
+            } else {
+              tempdiffs <- diffs[diffs < 0]
+              #tempdiffs <- c(0, tempdiffs)
+              tidx <- which(min(abs(tempdiffs)) == abs(tempdiffs))
+              nasfs <- if(is.null(nasfs)) which(diffs == tempdiffs[tidx]) else nasfs              
             }
-            tempdiffs <- diffs[diffs < 0]
-            #tempdiffs <- c(0, tempdiffs)
-            tidx <- which(min(abs(tempdiffs)) == abs(tempdiffs))
-            nasfs <- if(is.null(nasfs)) which(diffs == tempdiffs[tidx]) else nasfs
+
             
             #diffs <- unique(diffs)
             #nasfs <- min(which(diffs == min(diffs)))

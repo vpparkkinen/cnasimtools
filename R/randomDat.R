@@ -160,7 +160,7 @@ resize <- function(df, samplesize){
   } else {
     n <- samplesize %/% nrow(df)
     nmod <- samplesize - (n*nrow(df))
-    duplicaterows <- nmod
+    duplicaterows <- samplesize - nrow(df)
     if (n == 1) {predf <- df} else {
       predf <- do.call(rbind, rep(list(df), n))
     }
@@ -171,6 +171,4 @@ resize <- function(df, samplesize){
   return(df)
 }
 
-f <- function(a,b){
-  t <- a+b
-}
+
