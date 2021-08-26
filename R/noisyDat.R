@@ -218,12 +218,22 @@ noisyDat <- function(x = 5,
             nu <- as.integer(gsub("/\\d*$", "", fc))
             divs <- nn_rown %/% dn
             rems <- nn_rown %% dn
-            if(max(divs) == 0){ssize <- dn} else {
+            if(!is.null(nasfs)){
+              if(divs[nasfs] == 0){
+                ssize <- dn
+              } else {
+                  pick <- divs[nasfs] + 1
+                  ssize <- pick * dn
+                  }
+            } else {
+              if(max(divs) == 0){ssize <- dn} else {
               dividx <- which(divs > 0)
               pick <- sample(dividx, 1)
               #ssize <- nn_rown[pick] + rems[pick]
               ssize <- pick * dn
+              }
             }
+ 
             no.replace <- ssize * noisefraction
             diffs <- abs(ssize - nn_rown)
             nasfs <- if(is.null(nasfs)) which(diffs == min(diffs)) else nasfs
@@ -232,25 +242,46 @@ noisyDat <- function(x = 5,
               dn <- as.integer(gsub("^\\d*/", "", fc))
               nu <- as.integer(gsub("/\\d*$", "", fc))
               divs <- nn_rown %/% nu
-              
-              if(max(divs) == 0){
-                ssize <- nu
-                no.replace <- dn - nu
+              #divs <- nn_rown %% nu
+              if(!is.null(nasfs)){
+                if(divs[nasfs] == 0){
+                  ssize <- nu
+                  no.replace <- dn - nu
                 } else {
-                  dividx <- which(divs > 0)
-                  pick <- sample(dividx, 1)
-                  mplier <- divs[pick]
-                  ssize <- nu * mplier
-                  no.replace <- (dn * mplier) - ssize
-                  diffs <- nn_rown %/% ssize
-                  #nasfs <- min(which(diffs == min(diffs)))
-                  nasfs <- if(is.null(nasfs)) which(diffs == min(diffs)) else nasfs
-                }
+                  mplier <- divs[nasfs]  
+                  }
+              } else {
+                  if(max(divs) == 0){
+                  ssize <- nu
+                  no.replace <- dn - nu
+                  } else {
+                    dividx <- which(divs > 1)
+                    pick <- sample(dividx, 1)
+                    mplier <- divs[pick]
+
+                  }
+              }
+            ssize <- nu * mplier
+            no.replace <- (dn * mplier) - ssize
+            #diffs <- nn_rown %% ssize
+            #diffs <- abs(nn_rown - ssize)
+            diffs <- nn_rown - ssize
+            if(any(diffs == 0)){
+              nasfs <- which(diffs == 0)
             }
+            tempdiffs <- diffs[diffs < 0]
+            #tempdiffs <- c(0, tempdiffs)
+            tidx <- which(min(abs(tempdiffs)) == abs(tempdiffs))
+            nasfs <- if(is.null(nasfs)) which(diffs == tempdiffs[tidx]) else nasfs
+            
+            #diffs <- unique(diffs)
+            #nasfs <- min(which(diffs == min(diffs)))
+            #nasfs <- if(is.null(nasfs)) which(diffs == min(diffs)) else nasfs
+          }
         } else {
           diffs <- abs(ssize - nn_rown)
           #min(abs(set_N - nn_rown))
-          nasfs <- which(diffs == min(diffs))
+          nasfs <- if (is.null(nasfs)) which(diffs == min(diffs)) else nasfs
           }
       #}
       x <- randomDat(x,
