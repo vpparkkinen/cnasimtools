@@ -263,7 +263,7 @@ noisyDat <- function(x = 5,
                   }
               }
             if(nu * mplier < min(nn_rown)){
-              mplier <- mplier * 2
+              mplier <- mplier + 1
             }
             ssize <- nu * mplier
             # if (ssize < min(nn_rown)){
