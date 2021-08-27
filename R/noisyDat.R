@@ -241,8 +241,9 @@ noisyDat <- function(x = 5,
               fc <- MASS::fractions(1 - noisefraction)
               dn <- as.integer(gsub("^\\d*/", "", fc))
               nu <- as.integer(gsub("/\\d*$", "", fc))
+              
               divs <- nn_rown %/% nu
-              #divs <- nn_rown %% nu
+              rems <- nn_rown %% nu
               if(!is.null(nasfs)){
                 if(divs[nasfs] == 0){
                   ssize <- nu
@@ -255,13 +256,19 @@ noisyDat <- function(x = 5,
                   ssize <- nu
                   no.replace <- dn - nu
                   } else {
-                    dividx <- which(divs > 1)
+                    dividx <- which(divs >= 1)
                     pick <- sample(dividx, 1)
                     mplier <- divs[pick]
-
+    
                   }
               }
+            if(nu * mplier < min(nn_rown)){
+              mplier <- mplier * 2
+            }
             ssize <- nu * mplier
+            # if (ssize < min(nn_rown)){
+            #   ssize <- ssize * 2
+            #   }
             no.replace <- (dn * mplier) - ssize
             #diffs <- nn_rown %% ssize
             #diffs <- abs(nn_rown - ssize)
