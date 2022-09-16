@@ -473,6 +473,7 @@ csdat <- function(x, ssize, noisefraction, nasfs, add, type){
           if(divs[nasfs] == 0){
             ssize <- nu
             no.replace <- dn - nu
+            mplier <- 1
           } else {
             mplier <- divs[nasfs]
             }

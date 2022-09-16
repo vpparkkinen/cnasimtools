@@ -82,8 +82,8 @@ randomDat <- function(x = 5,
 
   x <- list(x = x)
   rargs <- if(length(randomCondsArgs) < 1){x} else {c(x, randomCondsArgs)}
+  check <- FALSE
   if(ctype == "csf"){
-    check <- FALSE
     while(isFALSE(check)){
       mod <- do.call(cna::randomCsf, rargs) 
       check <- check_modliterals(mod = mod, x = ncol(x$x))
