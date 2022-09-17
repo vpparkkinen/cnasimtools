@@ -481,6 +481,7 @@ csdat <- function(x, ssize, noisefraction, nasfs, add, type){
             if(max(divs) == 0){
             ssize <- nu
             no.replace <- dn - nu
+            mplier <- 1
             } else {
               dividx <- which(divs >= 1)
               pick <- sample(dividx, 1)
