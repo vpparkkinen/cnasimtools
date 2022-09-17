@@ -120,7 +120,7 @@ noisyDat <- function(x = 5,
   xarg <- substitute(x)
   dots <- list(...)
   
-
+  if(noisefraction == 0){stop("noisefraction has value 0. For generating noise-free data from a randomly drawn target, use randomDat() instead.")}
   if(any(class(x) %in% c("configTable", "data.frame"))){
     x <- if(any(class(x) == "configTable")) ct2df(x) else x
 
