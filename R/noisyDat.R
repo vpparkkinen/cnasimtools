@@ -220,7 +220,8 @@ noisyDat <- function(x = 5,
                  noisefraction = noisefraction, 
                  nasfs = nasfs, 
                  add = add,
-                 type = type)
+                 type = type,
+                 no.replace = no.replace)
       x <- dat_norep[[1]]
       no.replace <- dat_norep[[2]]
     }
@@ -425,7 +426,7 @@ mvdat <- function(x, ssize, noisefraction, nasfs, add, type, mvlevels){
 
 
 
-csdat <- function(x, ssize, noisefraction, nasfs, add, type){  
+csdat <- function(x, ssize, noisefraction, nasfs, add, type, no.replace){  
   all_n <- 2**x
   perm_nasfs <- 1:(x-2)
   nn_rown <- sapply(perm_nasfs, function(x) all_n / 2^x)
