@@ -87,17 +87,17 @@ chance of randomly fragmenting the clean data even before making it noisy.
 This is done by sampling rows from the initial clean data with replacement,
 using the probability weights given in \code{cleanbias}. This results in a
 data set of the same size as the initial clean data, but with some rows
-possibly replaced by duplicates of other clean rows. This, possibly
-fragmented data set, is then used as the clean data that is manipulated by
-noise. Similarly, some noise configurations can be made more likely to
-occur than others by using the \code{noisebias} argument. In the case where
-\code{x} is an integer and the clean data is created within the function by
+possibly replaced by duplicates of other clean rows. This data set is then
+used as the clean data that is manipulated to make it noisy. Similarly,
+some noise configurations can be made more likely to occur than others by
+using the \code{noisebias} argument. In the case where \code{x} is an
+integer and the clean data is created within the function by
 \code{randomDat}, the noise rows are always incompatible with structure
 that created the clean data. In this case, the target structure that was
 used to create the clean data is stored as attribute \code{target} of the
 returned data frame.
 
-Note that when creating a data set from randomly generated target, i.e.
+Note that when creating a data set from a randomly generated target, i.e.
 when \code{x} is given an integer value, the value of the \code{add}
 argument does \emph{not} guarantee that either every configuration compatible
 with the target is present or that some configurations are absent in the
