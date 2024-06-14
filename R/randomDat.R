@@ -172,3 +172,35 @@ resize <- function(df, samplesize){
 }
 
 
+#'
+#' @param Nsets 
+#' @param size 
+#' @param varnum 
+#' @param type 
+#' @param varnames 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+bs_dat_create <- function(Nsets = 1e3, 
+                          size = 30, 
+                          varnum = 7,
+                          type = c("cs", "fs"),
+                          varnames = LETTERS[1:varnum]){
+  type = match.arg(type)
+  if (type == "fs"){
+    c <- quote(runif(size, min = 0, max = 1))
+  } 
+  if (type == "cs"){
+    c <- quote(rbinom(n = size, size = 1, prob = 0.5))
+  }
+  dsets <- vector("list", Nsets)
+  for(i in 1:Nsets){
+    dsets[[i]] <- data.frame(setNames(
+      replicate(varnum, eval(c), simplify = FALSE), varnames))
+  }
+  return(dsets)
+}
+
+
