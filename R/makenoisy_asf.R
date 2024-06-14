@@ -1,16 +1,21 @@
-#' Make a noisy data set from asf while controlling prevalence.
+#' Make a noisy data set from an *asf* while controlling outcome prevalence.
 #'
-#' @param model 
-#' @param data 
-#' @param outcome 
-#' @param prevalence 
-#' @param noiselevel 
-#' @param N 
+#' @param model A character string that expresses a `cna` model.
+#' @param data  A data.frame; the data set to be manipulated.
+#' @param outcome Named, unit length list; the outcome variable/factor name and value.
+#' @param prevalence Numeric between zero and one.
+#' @param noiselevel Numeric between zero and one.
+#' @param N Integer.
 #'
-#' @return
+#' @details `makenoisy_asf()` generates noisy data sets while allowing the user
+#'   to control outcome prevalence. Given an *asf*, a data set will be created
+#'   where the outcome prevalence equals `prevalence`, number of rows equals
+#'   `N`, and proportion of rows that do not conform to the input *asf* (i.e. the
+#'   proportion of noise to ideal data) equals `noiselevel`. 
+#' @return `data.frame`
 #' @export
 #'
-#' @examples
+#' @examples makenoisy_asf("A+B<->C", prevalence = 0.25, noiselevel = 0.2, N = 10)
 makenoisy_asf <- function(model = randomAsf(6), 
                           data = ct2df(selectCases(model)), 
                           outcome = setNames(list(1), rhs(model)), 
@@ -21,6 +26,7 @@ makenoisy_asf <- function(model = randomAsf(6),
   # oc <- deparse(oc_temp)
   # oc <- gsub(" ", "", strsplit(oc, "==")[[1]][1])
   stopifnot(is.list(outcome) || is.character(outcome))
+  model <- noblanks(model)
   if(is.list(outcome)) {
     oc <- names(outcome)[[1]]
   } else {
@@ -41,7 +47,7 @@ makenoisy_asf <- function(model = randomAsf(6),
 
 
 prevalence_fixer <- function(data, outcome, prevalence, N){
-  if((prevalence * N) %% 1 != 0L) warning("`prevalence` is not a fraction of `N`")
+  if(!isTRUE(all.equal((prevalence * N) %% 1, 0L))) warning("`prevalence` is not a fraction of `N`")
   # if(class(substitute(outcome, parent.frame())) == "call"){o <- outcome} else{
   #   o <- substitute(outcome)  
   # }
@@ -79,6 +85,26 @@ prevalence_fixer <- function(data, outcome, prevalence, N){
   return(out)
 }
 
+#' Change outcome column values.
+#'
+#' Create a noisy data set by changing outcome column (factor) values for a
+#' proportion of rows of a data set.
+#'
+#' @param data A `data.frame`
+#' @param outcome Character; outcome column (factor) name.
+#' @param proportion A numeric that determines a proportion of rows in `data`
+#'   for which outcome is to be changed.
+#'
+#' @return A `data.frame`
+#' @export
+#'
+#' @details Given a data frame `data` and the name of an outcome variable/factor
+#'   `outcome`, `flipout()` changes the outcome value for a proportion of rows
+#'   in `data`, the number of which is geiven by `proportion`. If `proportion`
+#'   is not a (vulgar) fraction of `nrow(data)`, number of rows to be
+#'   manipulated is determined as `round(proportion * nrow(data))`.
+#'
+#' @examples
 flipout <- function(data, outcome, proportion) {
   N <- nrow(data)
   out_col <- which(names(data) == outcome)
