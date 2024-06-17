@@ -172,6 +172,7 @@ resize <- function(df, samplesize){
 }
 
 
+#' Title
 #'
 #' @param Nsets 
 #' @param size 
