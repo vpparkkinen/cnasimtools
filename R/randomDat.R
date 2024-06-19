@@ -207,6 +207,7 @@ bs_dat_create <- function(Nsets = 1e3,
     #   replicate(varnum, eval(c), simplify = FALSE), varnames))
     # 
     ss <- if(length(N) == 1L) list(n = N) else list(n = sample(N, 1))
+
     dsets[[i]] <- data.frame(setNames(
       replicate(varnum, 
                 do.call(c, c(ss, args)), simplify = FALSE), varnames))
