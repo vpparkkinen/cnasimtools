@@ -185,21 +185,31 @@ resize <- function(df, samplesize){
 #'
 #' @examples
 bs_dat_create <- function(Nsets = 1e3, 
-                          size = 30, 
+                          N = 30, 
                           varnum = 7,
                           type = c("cs", "fs"),
                           varnames = LETTERS[1:varnum]){
   type = match.arg(type)
   if (type == "fs"){
-    c <- quote(runif(size, min = 0, max = 1))
+    # c <- quote(runif(N, min = 0, max = 1))
+    c <- "runif"
+    args <- list(min = 0L, max = 1L)
   } 
   if (type == "cs"){
-    c <- quote(rbinom(n = size, size = 1, prob = 0.5))
+   # c <- quote(rbinom(n = N, size = 1, prob = 0.5))
+    c <- "rbinom"
+    args <- list(size = 1, prob = 0.5)
   }
   dsets <- vector("list", Nsets)
   for(i in 1:Nsets){
+    
+    # dsets[[i]] <- data.frame(setNames(
+    #   replicate(varnum, eval(c), simplify = FALSE), varnames))
+    # 
+    ss <- if(length(N) == 1L) list(n = N) else list(n = sample(N, 1))
     dsets[[i]] <- data.frame(setNames(
-      replicate(varnum, eval(c), simplify = FALSE), varnames))
+      replicate(varnum, 
+                do.call(c, c(ss, args)), simplify = FALSE), varnames))
   }
   return(dsets)
 }
