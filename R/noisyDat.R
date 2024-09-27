@@ -342,7 +342,7 @@ noisyDat <- function(x = 5,
     stop("Invalid argument x = ", deparse(xarg))
   }
   allconfs <- ct2df(full.ct(x, type = type))
-  pnoise <- dplyr::setdiff(allconfs, x)
+  pnoise <- dplyr::setdiff(allconfs, ct2df(selectCases(attributes(x)$target)))
   #dots <- substitute(list(...))
  # no.replace <- if(add) {
     #(noisefraction * nrow(x)) / (1 - noisefraction)
